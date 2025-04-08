@@ -1,0 +1,92 @@
+.mode-toggle-container {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  z-index: 100;
+  align-items: center;
+  background: rgba(10, 15, 30, 0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 30px;
+  padding: 5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(100, 100, 255, 0.2);
+}
+
+.mode-toggle-label {
+  font-size: 0.8rem;
+  color: #a5a5a5;
+  margin-left: 10px;
+  margin-right: 5px;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 5px;
+}
+
+.mode-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #a5a5a5;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.mode-button.active {
+  background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);
+  color: white;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.mode-button.active:nth-child(2) {
+  background: linear-gradient(135deg, #1a2980, #26d0ce);
+}
+
+.mode-button:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mode-icon {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.mode-name {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.mode-description {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .mode-toggle-container {
+    top: 10px;
+    left: 10px;
+    padding: 3px;
+  }
+  
+  .mode-button {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+  
+  .mode-icon {
+    font-size: 1rem;
+  }
+  
+  .mode-description {
+    display: none;
+  }
+}
