@@ -26,6 +26,9 @@ export default defineConfig({
     cors: {
       origin: '*'
     },
-    allowedHosts: ['a0be2283-6f2f-44ff-8910-983aa0a4a8cc-00-20xcgy64l6oxl.kirk.replit.dev'],
+    allowedHosts: [
+      'a0be2283-6f2f-44ff-8910-983aa0a4a8cc-00-20xcgy64l6oxl.kirk.replit.dev',
+      'b5c67b77-c3f3-47e5-bea3-d4c61b842e5a-00-5g6u4t98aep.spock.replit.dev' // Add this line
+    ],
   }
 });
