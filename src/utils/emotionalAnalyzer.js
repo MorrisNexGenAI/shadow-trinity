@@ -45,7 +45,7 @@ const NEUTRAL_RESPONSES = [
   "I am processing your communication. Our digital link remains stable."
 ];
 
-// Store conversation history for context (for OpenAI API)
+// Store conversation history for context (for Hugging Face API)
 let conversationHistory = [];
 
 /**

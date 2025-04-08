@@ -26,7 +26,7 @@ function App() {
   const [showTrainingPanel, setShowTrainingPanel] = useState(false);
   // State to remember the last interaction for training purposes
   const [lastInteraction, setLastInteraction] = useState(null);
-  // State to track whether we're using the trainable analyzer or OpenAI
+  // State to track whether we're using the trainable analyzer or Hugging Face AI
   const [useTrainableAnalyzer, setUseTrainableAnalyzer] = useState(false);
 
   /**
@@ -44,7 +44,7 @@ function App() {
       let newResponse;
       let analysisResult = null;
       
-      // Check if we should use the trainable analyzer or try OpenAI first
+      // Check if we should use the trainable analyzer or try Hugging Face AI first
       if (useTrainableAnalyzer) {
         // Use the trainable analyzer directly
         const result = processMessage(message);
@@ -52,11 +52,11 @@ function App() {
         analysisResult = result.analysis;
       } else {
         try {
-          // First try the OpenAI-powered response
+          // First try the Hugging Face-powered response
           newResponse = await analyzeEmotionAndRespond(message);
         } catch (aiError) {
           console.error("Error with AI service:", aiError);
-          // If OpenAI fails, fall back to trainable analyzer
+          // If Hugging Face service fails, fall back to trainable analyzer
           const result = processMessage(message);
           newResponse = result.response;
           analysisResult = result.analysis;
@@ -89,7 +89,7 @@ function App() {
     }
   };
 
-  // Toggle the analyzer type between OpenAI and trainable
+  // Toggle the analyzer type between Hugging Face AI and trainable
   const toggleAnalyzer = () => {
     setUseTrainableAnalyzer(!useTrainableAnalyzer);
     setResponse(

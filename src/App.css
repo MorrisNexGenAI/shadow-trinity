@@ -496,19 +496,120 @@
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .shadow-os-container {
-    width: 95%;
-    padding: 15px;
+    width: 98%;
+    padding: 12px;
+    margin: 10px auto;
+    gap: 15px;
   }
   
   .shadow-os-header h1 {
-    font-size: 20px;
+    font-size: 18px;
+  }
+  
+  .version-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .twin-container {
+    gap: 10px;
+  }
+  
+  .twin-container h2 {
+    font-size: 16px;
+  }
+  
+  .response-area {
+    padding: 12px;
+    min-height: 60px;
+  }
+  
+  .response-area p {
+    font-size: 14px;
+    padding-left: 15px;
   }
   
   .message-form {
-    flex-direction: column;
+    flex-direction: row; /* Keep horizontal on mobile for a better UX */
+    gap: 8px;
+  }
+  
+  .message-input {
+    padding: 10px;
+    font-size: 14px;
   }
   
   .submit-button {
-    height: 40px;
+    min-width: 50px; /* Ensure button has enough touch area */
+    padding: 0 10px;
+  }
+  
+  /* Adjust training panel for mobile */
+  .training-panel {
+    width: 98%;
+    max-height: 95vh;
+  }
+  
+  .training-panel-content {
+    padding: 12px;
+    max-height: calc(95vh - 50px);
+  }
+  
+  .training-section h4 {
+    font-size: 14px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  /* Make the form input more touch friendly */
+  .form-group select, 
+  .form-group textarea,
+  .radio-group label,
+  .submit-feedback-button,
+  .add-response-button {
+    font-size: 14px;
+    padding: 12px;
+    min-height: 44px; /* Minimum touch target size for mobile */
+  }
+  
+  /* Training toggle button visibility */
+  .training-toggle {
+    bottom: 10px;
+    right: 10px;
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+}
+
+/* Additional touch device optimizations */
+@media (pointer: coarse) {
+  /* Optimize for touch inputs */
+  .submit-button,
+  .message-input,
+  .toggle-button,
+  .training-toggle,
+  .close-button {
+    min-height: 44px; /* Standard minimum touch target size */
+  }
+  
+  .close-button {
+    font-size: 28px;
+    padding: 8px 12px;
+  }
+  
+  /* Extra padding for radio buttons and checkboxes on touch devices */
+  .radio-group input {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .radio-group label {
+    padding: 8px 0;
   }
 }
