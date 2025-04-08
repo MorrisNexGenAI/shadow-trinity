@@ -173,6 +173,12 @@ const PersonalOnboarding = ({ onComplete }) => {
       case 1:
         return (
           <div className="onboarding-step">
+            <div className="welcome-message" style={{ marginBottom: '25px', padding: '15px', borderRadius: '8px', background: 'linear-gradient(145deg, #1a1a2e, #16213e)' }}>
+              <h2 style={{ marginBottom: '10px', color: '#8860d0', fontSize: '1.5rem' }}>Welcome to Shadow OS: Your Digital Twin</h2>
+              <p style={{ marginBottom: '10px', lineHeight: '1.4' }}>This is the first step in creating your personalized Echo Twin. After completing this onboarding process, you'll see a tutorial explaining all features.</p>
+              <p style={{ lineHeight: '1.4' }}>Your Echo Twin will analyze your writing style and learn to mirror your communication patterns.</p>
+            </div>
+            
             <h3>Basic Information</h3>
             <p className="step-description">
               Let's start with the essentials to create your personalized Echo Twin.
