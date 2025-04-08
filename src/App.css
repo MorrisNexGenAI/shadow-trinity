@@ -95,6 +95,44 @@
   animation: blink 1s infinite alternate;
 }
 
+/* Personalized state styles */
+.echo-twin-avatar.personalized {
+  background: radial-gradient(circle, #ff9500 0%, #ff5e3a 100%);
+  box-shadow: 0 0 15px rgba(255, 149, 0, 0.5);
+}
+
+.echo-twin-avatar.personalized.processing {
+  box-shadow: 0 0 25px rgba(255, 149, 0, 0.8);
+}
+
+.personalized-indicator {
+  position: absolute;
+  top: 15px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 3;
+  border: 2px solid #ff5e3a;
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.8);
+}
+
+.personalized-tag {
+  font-size: 12px;
+  color: #ff9500;
+  margin-left: 10px;
+  opacity: 0.9;
+  font-weight: normal;
+}
+
+.mirror-status {
+  font-size: 11px;
+  color: rgba(255, 149, 0, 0.8);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
 @keyframes pulse {
   from { transform: scale(1); }
   to { transform: scale(1.1); }
@@ -110,11 +148,18 @@
   to { opacity: 1; }
 }
 
+.twin-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .twin-container h2 {
   font-family: 'Orbitron', sans-serif;
   margin: 0;
   font-size: 18px;
   letter-spacing: 1px;
+  display: flex;
+  align-items: center;
 }
 
 .response-area {
@@ -373,6 +418,16 @@
 .training-toggle:hover {
   background: linear-gradient(to right, #00bfff, #00ffff);
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+}
+
+/* Personalized toggle button */
+.training-toggle.personalized-toggle {
+  background: linear-gradient(to right, #ff5e3a, #ff9500);
+}
+
+.training-toggle.personalized-toggle:hover {
+  background: linear-gradient(to right, #ff9500, #ffcc00);
+  box-shadow: 0 0 15px rgba(255, 149, 0, 0.5);
 }
 
 .message-form {
