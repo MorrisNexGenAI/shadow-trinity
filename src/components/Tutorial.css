@@ -1,0 +1,193 @@
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.tutorial-container {
+  width: 90%;
+  max-width: 500px;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: #e3e3e3;
+  border: 1px solid rgba(100, 100, 255, 0.2);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tutorial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tutorial-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #8860d0;
+  font-weight: 600;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #a5a5a5;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #fff;
+}
+
+.tutorial-content {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.tutorial-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tutorial-emoji {
+  font-size: 72px;
+  background: linear-gradient(135deg, #5d54a4, #7c4dff);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tutorial-content h3 {
+  font-size: 1.4rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #c2a8ff;
+}
+
+.tutorial-content p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  color: #d1d1d1;
+}
+
+.tutorial-progress {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.progress-dot.active {
+  background-color: #8860d0;
+  transform: scale(1.2);
+}
+
+.tutorial-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tutorial-button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.tutorial-button.primary {
+  background: linear-gradient(135deg, #8860d0, #5d54a4);
+  color: white;
+  border: none;
+  flex: 1;
+  max-width: 130px;
+}
+
+.tutorial-button.primary:hover {
+  background: linear-gradient(135deg, #9a74e8, #6f64c4);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.tutorial-button.secondary {
+  background: transparent;
+  color: #a5a5a5;
+  border: 1px solid rgba(165, 165, 165, 0.3);
+  margin-right: 10px;
+}
+
+.tutorial-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.tutorial-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .tutorial-container {
+    width: 95%;
+    padding: 16px;
+  }
+  
+  .tutorial-emoji {
+    font-size: 60px;
+    width: 100px;
+    height: 100px;
+  }
+  
+  .tutorial-content h3 {
+    font-size: 1.2rem;
+  }
+  
+  .tutorial-content p {
+    font-size: 0.9rem;
+  }
+  
+  .tutorial-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .tutorial-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}

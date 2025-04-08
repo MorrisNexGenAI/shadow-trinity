@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import App from '../App';
 import PersonalOnboarding from './PersonalOnboarding';
 import PersonalLearningPanel from './PersonalLearningPanel';
+import Tutorial from './Tutorial';
 import { loadIdentityProfile } from '../utils/deepIdentityProfiler';
 import { loadStyleProfile } from '../utils/styleAnalyzer';
 import { getLearningMode } from '../utils/personalLearningSystem';
+import './PersonalizedApp.css';
 
 /**
  * Main entry point for the personalized version of the app
@@ -13,6 +15,7 @@ import { getLearningMode } from '../utils/personalLearningSystem';
 const PersonalizedApp = () => {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [showLearningPanel, setShowLearningPanel] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [isPersonalized, setIsPersonalized] = useState(false);
   const [userData, setUserData] = useState(null);
   
@@ -39,11 +42,18 @@ const PersonalizedApp = () => {
         console.error('Error loading user data:', err);
       }
     }
+    
+    // Check if tutorial has been shown before
+    const tutorialShown = localStorage.getItem('tutorialShown');
+    
+    // Show tutorial if not shown before or if we're in a new session
+    setShowTutorial(!tutorialShown);
   }, []);
   
   const handleOnboardingComplete = () => {
     setOnboardingComplete(true);
     setIsPersonalized(true);
+    setShowTutorial(true); // Show tutorial after onboarding
     
     // Get user name from local storage after onboarding
     try {
@@ -64,6 +74,16 @@ const PersonalizedApp = () => {
     setShowLearningPanel(prev => !prev);
   };
   
+  const handleTutorialClose = () => {
+    setShowTutorial(false);
+    // Mark that tutorial has been shown
+    localStorage.setItem('tutorialShown', 'true');
+  };
+  
+  const handleHelpClick = () => {
+    setShowTutorial(true);
+  };
+  
   // Render onboarding if not complete
   if (!onboardingComplete) {
     return <PersonalOnboarding onComplete={handleOnboardingComplete} />;
@@ -79,18 +99,32 @@ const PersonalizedApp = () => {
       
       {isPersonalized && (
         <>
-          <button 
-            className={`training-toggle ${isPersonalized ? 'personalized-toggle' : ''}`}
-            onClick={toggleLearningPanel}
-          >
-            {isPersonalized ? 'Identity Mirror Settings' : 'Training Panel'}
-          </button>
+          <div className="controls-container">
+            <button 
+              className={`training-toggle ${isPersonalized ? 'personalized-toggle' : ''}`}
+              onClick={toggleLearningPanel}
+            >
+              {isPersonalized ? 'Identity Mirror Settings' : 'Training Panel'}
+            </button>
+            
+            <button 
+              className="help-button"
+              onClick={handleHelpClick}
+              aria-label="Show Tutorial"
+            >
+              ?
+            </button>
+          </div>
           
           {showLearningPanel && (
             <PersonalLearningPanel 
               onClose={() => setShowLearningPanel(false)}
               userData={userData}
             />
+          )}
+          
+          {showTutorial && (
+            <Tutorial onClose={handleTutorialClose} />
           )}
         </>
       )}

@@ -1,0 +1,77 @@
+.personalized-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.controls-container {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  z-index: 100;
+  gap: 10px;
+}
+
+.training-toggle {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.training-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.personalized-toggle {
+  background: linear-gradient(135deg, #8860d0, #5d54a4);
+}
+
+.help-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.help-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .controls-container {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .training-toggle {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .help-button {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}
