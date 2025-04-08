@@ -165,7 +165,7 @@ export const analyzeSample = (text, weight = 1) => {
   
   // Analyze sentence length distribution
   sentences.forEach(sentence => {
-    const wordCount = sentence.split(/\\s+/).length;
+    const wordCount = sentence.split(/\s+/).length;
     identityMatrix.linguisticSignatures.sentenceLength.push(wordCount);
     
     // Keep the distribution manageable
@@ -178,7 +178,7 @@ export const analyzeSample = (text, weight = 1) => {
   });
   
   // Analyze word usage
-  const words = text.match(/\\b\\w+\\b/g) || [];
+  const words = text.match(/\b\w+\b/g) || [];
   analyzeVocabulary(words, weight);
   
   // Analyze emotional content
@@ -221,7 +221,7 @@ const analyzeComplexity = (sentence, weight) => {
   const hasAdverbialMarker = /however|therefore|consequently|furthermore|additionally|nevertheless|thus|hence/i.test(sentence);
   
   // Count words with more than 3 syllables (approximation)
-  const words = sentence.match(/\\b\\w+\\b/g) || [];
+  const words = sentence.match(/\b\w+\b/g) || [];
   let complexWordCount = 0;
   
   words.forEach(word => {
@@ -329,7 +329,7 @@ const extractUniqueExpressions = (text, weight) => {
   const phrases = [];
   
   // Extract 3-5 word phrases
-  const words = text.toLowerCase().split(/\\s+/);
+  const words = text.toLowerCase().split(/\s+/);
   for (let length = 3; length <= 5; length++) {
     if (words.length >= length) {
       for (let i = 0; i <= words.length - length; i++) {
@@ -387,13 +387,13 @@ const analyzePunctuation = (text, weight) => {
   // Count different types of punctuation
   const punctuation = {
     '!': (text.match(/!/g) || []).length,
-    '?': (text.match(/\\?/g) || []).length,
-    '...': (text.match(/\\.\\.\\.(?!\\.)|\\.{3}(?!\\.)|\\.\\.\\.(?!\\.)(?=\\s|$)/g) || []).length,
+    '?': (text.match(/\?/g) || []).length,
+    '...': (text.match(/\.\.\.(?!\.)|\.{3}(?!\.)|\.\.\.(?!\.)(?=\s|$)/g) || []).length,
     ',': (text.match(/,/g) || []).length,
     ';': (text.match(/;/g) || []).length,
     ':': (text.match(/:/g) || []).length,
     '-': (text.match(/-/g) || []).length,
-    '()': (text.match(/\\(/g) || []).length, // Count opening parentheses
+    '()': (text.match(/\(/g) || []).length,
     '"': (text.match(/"|"/g) || []).length,
     "'": (text.match(/'/g) || []).length
   };
