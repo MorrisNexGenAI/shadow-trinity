@@ -1,64 +1,51 @@
 /**
- * Style Analyzer for Shadow OS Echo Twin
- * Analyzes and learns a person's communication style for identity mirroring
+ * Style Analyzer for Echo Twin
+ * Learns and models the user's communication style
  */
 
-// Core style profile
+// Core style profile structure
 let styleProfile = {
-  // Language structure
   sentenceStructure: {
-    averageLength: 0,       // Average sentence length in words
-    complexSentences: 0,    // Percentage of complex sentences (0-100)
-    fragmentUsage: 0,       // Frequency of sentence fragments (0-10)
-    questionFrequency: 0,   // Frequency of questions (0-10)
+    averageLength: 0,
+    complexSentences: 0,
+    fragmentUsage: 0,
+    questionFrequency: 0,
   },
-  
-  // Vocabulary and word choice
   vocabularyProfile: {
-    complexity: 0,         // Word complexity (0-10)
-    diversity: 0,          // Vocabulary diversity (0-10)
-    favoriteWords: {},     // Frequently used words with count
-    synonymPreferences: {} // Preferred synonyms for common words
+    complexity: 0,
+    diversity: 0,
+    favoriteWords: {},
+    synonymPreferences: {}
   },
-  
-  // Punctuation and formatting
   punctuationStyle: {
-    exclamationFrequency: 0,  // 0-10 scale
-    commaFrequency: 0,        // 0-10 scale
-    ellipsisUsage: 0,         // 0-10 scale 
-    semicolonUsage: 0,        // 0-10 scale
-    parenthesesUsage: 0,      // 0-10 scale
-    dashUsage: 0,             // 0-10 scale
+    exclamationFrequency: 0,
+    commaFrequency: 0,
+    ellipsisUsage: 0,
+    semicolonUsage: 0,
+    parenthesesUsage: 0,
+    dashUsage: 0,
   },
-  
-  // Emoji and emoticon usage
   emojiStyle: {
-    frequency: 0,           // 0-10 scale
-    positive: [],           // Frequently used positive emojis
-    negative: [],           // Frequently used negative emojis
-    neutral: [],            // Frequently used neutral emojis
-    favorites: []           // Most frequently used emojis
+    frequency: 0,
+    positive: [],
+    negative: [],
+    neutral: [],
+    favorites: []
   },
-  
-  // Common phrases and expressions
   phrasesAndExpressions: {
-    greetings: [],          // Common greeting phrases
-    farewells: [],          // Common farewell phrases
-    transitions: [],        // Transitional phrases
-    expressions: []         // Unique expressions or catchphrases
+    greetings: [],
+    farewells: [],
+    transitions: [],
+    expressions: []
   },
-  
-  // Formality and behavioral patterns
   behavioralPatterns: {
-    formality: 0,           // -10 to 10 scale (casual to formal)
-    directness: 0,          // -10 to 10 scale (indirect to direct)
-    verbosity: 0,           // -10 to 10 scale (concise to verbose)
-    emotionalExpression: 0, // 0-10 scale (reserved to expressive)
-    politeness: 0,          // 0-10 scale
-    humor: 0,               // 0-10 scale
+    formality: 0,
+    directness: 0,
+    verbosity: 0,
+    emotionalExpression: 0,
+    politeness: 0,
+    humor: 0,
   },
-  
-  // Emotional signature - how emotions are expressed
   emotionalSignature: {
     joy: { frequency: 0, expressions: [] },
     sadness: { frequency: 0, expressions: [] },
@@ -69,7 +56,7 @@ let styleProfile = {
   }
 };
 
-// Training data
+// Track analyzed samples
 let analyzedSamples = [];
 
 /**
@@ -77,81 +64,42 @@ let analyzedSamples = [];
  * @param {Object} userData - Data collected during onboarding
  */
 export const initializeStyleAnalyzer = (userData) => {
-  // Reset to default values
+  // Reset to defaults
   resetStyleProfile();
   
-  // Process name and basic data
-  if (userData.name) {
-    // Use name to potentially detect formal/informal style
-    if (userData.name.includes(' ')) {
-      styleProfile.behavioralPatterns.formality += 1; // Slight formality increase for full names
-    }
-  }
-  
-  // Process communication preferences if available
-  if (userData.communicationPreferences) {
+  // Apply initial user preferences
+  if (userData && userData.communicationPreferences) {
     if (userData.communicationPreferences.formal) {
-      styleProfile.behavioralPatterns.formality += 5;
-    }
-    
-    if (userData.communicationPreferences.casual) {
-      styleProfile.behavioralPatterns.formality -= 5;
+      styleProfile.behavioralPatterns.formality = 5;
+    } else if (userData.communicationPreferences.casual) {
+      styleProfile.behavioralPatterns.formality = -5;
     }
     
     if (userData.communicationPreferences.direct) {
-      styleProfile.behavioralPatterns.directness += 5;
+      styleProfile.behavioralPatterns.directness = 5;
+    } else if (userData.communicationPreferences.indirect) {
+      styleProfile.behavioralPatterns.directness = -5;
     }
     
-    if (userData.communicationPreferences.elaborate) {
-      styleProfile.behavioralPatterns.verbosity += 5;
+    if (userData.communicationPreferences.verbose) {
+      styleProfile.behavioralPatterns.verbosity = 5;
+    } else if (userData.communicationPreferences.concise) {
+      styleProfile.behavioralPatterns.verbosity = -5;
     }
     
-    if (userData.communicationPreferences.concise) {
-      styleProfile.behavioralPatterns.verbosity -= 5;
+    if (userData.communicationPreferences.emotional) {
+      styleProfile.behavioralPatterns.emotionalExpression = 5;
     }
   }
   
-  // Process personal identity data
-  if (userData.personalIdentity) {
-    // Add unique expressions
-    if (userData.personalIdentity.uniqueTraits && Array.isArray(userData.personalIdentity.uniqueTraits)) {
-      styleProfile.phrasesAndExpressions.expressions = [...userData.personalIdentity.uniqueTraits];
-    }
-    
-    // Extract emotional expression style
-    if (userData.personalIdentity.emotionalSignature) {
-      const emotionalText = userData.personalIdentity.emotionalSignature.toLowerCase();
-      
-      // Check for keywords indicating emotional expressiveness
-      if (emotionalText.includes('expressive') || 
-          emotionalText.includes('emotional') || 
-          emotionalText.includes('passionate')) {
-        styleProfile.behavioralPatterns.emotionalExpression += 3;
-      }
-      
-      // Check for keywords indicating reserved style
-      if (emotionalText.includes('reserved') || 
-          emotionalText.includes('private') || 
-          emotionalText.includes('controlled')) {
-        styleProfile.behavioralPatterns.emotionalExpression -= 3;
-      }
-      
-      // Check for emoji usage
-      if (emotionalText.includes('emoji') || 
-          emotionalText.includes('emoticon')) {
-        styleProfile.emojiStyle.frequency += 3;
-      }
-    }
-  }
-  
-  // Process writing samples
-  if (userData.writingSamples && userData.writingSamples.length > 0) {
+  // Process writing samples if available
+  if (userData && userData.writingSamples && userData.writingSamples.length > 0) {
     userData.writingSamples.forEach(sample => {
       analyzeText(sample, true);
     });
   }
   
-  // Save the initial style profile
+  // Save initial profile
   saveStyleProfile();
   
   return styleProfile;
@@ -163,41 +111,55 @@ export const initializeStyleAnalyzer = (userData) => {
  * @param {boolean} isInitial - Whether this is initial training or ongoing learning
  */
 export const analyzeText = (text, isInitial = false) => {
-  if (!text || typeof text !== 'string' || text.trim().length === 0) {
-    return;
-  }
+  if (!text || typeof text !== 'string' || text.trim().length === 0) return;
   
   // Add to analyzed samples
-  analyzedSamples.push(text);
+  analyzedSamples.push({
+    text: text.substring(0, 100), // Store preview only
+    timestamp: Date.now()
+  });
   
-  // Keep samples at a reasonable number
-  if (analyzedSamples.length > 50) {
+  // Keep samples collection at reasonable size
+  if (analyzedSamples.length > 20) {
     analyzedSamples.shift();
   }
   
-  // Parse into sentences for structure analysis
+  // Break into sentences for analysis
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-  sentences.forEach(sentence => {
-    analyzeSentence(sentence.trim());
-  });
   
-  // Parse into words for vocabulary analysis
-  const words = text.match(/\\b\\w+\\b/g) || [];
-  analyzeWords(words);
+  // Update sentence structure measurements
+  if (sentences.length > 0) {
+    // Calculate average sentence length
+    let totalWords = 0;
+    sentences.forEach(sentence => {
+      const words = sentence.match(/\b\w+\b/g) || [];
+      totalWords += words.length;
+      
+      analyzeSentenceStructure(sentence);
+    });
+    
+    const averageLength = totalWords / sentences.length;
+    styleProfile.sentenceStructure.averageLength = 
+      isInitial ? averageLength : (styleProfile.sentenceStructure.averageLength * 0.7) + (averageLength * 0.3);
+  }
   
-  // Analyze punctuation style
+  // Extract all words for vocabulary analysis
+  const words = text.match(/\b\w+\b/g) || [];
+  analyzeVocabulary(words);
+  
+  // Analyze punctuation usage
   analyzePunctuation(text);
   
-  // Analyze emoji usage
+  // Analyze emoji usage 
   analyzeEmoji(text);
   
-  // Extract common phrases
+  // Extract phrases
   extractPhrases(text);
   
-  // Analyze formality and behavioral patterns
+  // Analyze formality and other behavioral patterns
   analyzeFormality(text);
   
-  // Save updates to the style profile
+  // Save updated profile
   saveStyleProfile();
 };
 
@@ -205,70 +167,57 @@ export const analyzeText = (text, isInitial = false) => {
  * Analyze sentence structure
  * @param {string} sentence - Single sentence to analyze
  */
-const analyzeSentence = (sentence) => {
-  // Count words
-  const words = sentence.match(/\\b\\w+\\b/g) || [];
-  const wordCount = words.length;
-  
-  // Update average sentence length
-  const currentAvg = styleProfile.sentenceStructure.averageLength;
-  const sampleCount = analyzedSamples.length;
-  
-  styleProfile.sentenceStructure.averageLength = 
-    ((currentAvg * (sampleCount - 1)) + wordCount) / sampleCount;
-  
-  // Check for complex sentence structures
-  const hasSubordinate = /although|because|since|while|if|when|after|before|as|whereas/i.test(sentence);
-  const hasConjunction = /and|or|but|so|yet|for|nor/i.test(sentence);
-  const hasTransitional = /however|therefore|consequently|furthermore|additionally/i.test(sentence);
-  
-  if (hasSubordinate || hasTransitional) {
-    styleProfile.sentenceStructure.complexSentences += 0.5;
+const analyzeSentenceStructure = (sentence) => {
+  // Detect question frequency
+  if (sentence.trim().endsWith('?')) {
+    styleProfile.sentenceStructure.questionFrequency = 
+      (styleProfile.sentenceStructure.questionFrequency * 0.9) + 0.1;
   }
   
-  // Check for fragments (simple approximation)
-  if (wordCount < 4 && !(/\\b(is|are|was|were|have|has|had)\\b/i.test(sentence))) {
-    styleProfile.sentenceStructure.fragmentUsage += 0.5;
+  // Check for complex sentence structures (with conjunctions, etc.)
+  if (/\b(although|because|since|while|if|when|whereas|unless|therefore|however|nevertheless)\b/i.test(sentence)) {
+    styleProfile.sentenceStructure.complexSentences = 
+      (styleProfile.sentenceStructure.complexSentences * 0.9) + 0.1;
   }
   
-  // Check for questions
-  if (sentence.endsWith('?')) {
-    styleProfile.sentenceStructure.questionFrequency += 1;
+  // Look for sentence fragments
+  const words = sentence.match(/\b\w+\b/g) || [];
+  if (words.length < 4 && !/\b(is|are|was|were|have|has|had|will|shall|should|would|could|can)\b/i.test(sentence)) {
+    styleProfile.sentenceStructure.fragmentUsage = 
+      (styleProfile.sentenceStructure.fragmentUsage * 0.9) + 0.1;
   }
-  
-  // Normalize values to stay within scale
-  styleProfile.sentenceStructure.complexSentences = 
-    clamp(styleProfile.sentenceStructure.complexSentences, 0, 10);
-    
-  styleProfile.sentenceStructure.fragmentUsage = 
-    clamp(styleProfile.sentenceStructure.fragmentUsage, 0, 10);
-    
-  styleProfile.sentenceStructure.questionFrequency = 
-    clamp(styleProfile.sentenceStructure.questionFrequency, 0, 10);
 };
 
 /**
  * Analyze word preferences and vocabulary
  * @param {Array<string>} words - Array of words from the text
  */
-const analyzeWords = (words) => {
+const analyzeVocabulary = (words) => {
   if (words.length === 0) return;
   
-  // Filter out common words
+  // Calculate vocabulary diversity (unique words / total words)
+  const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+  const diversity = uniqueWords.size / words.length;
+  
+  styleProfile.vocabularyProfile.diversity = 
+    (styleProfile.vocabularyProfile.diversity * 0.7) + (diversity * 0.3);
+  
+  // Count word frequencies (for favorite words)
   const commonWords = new Set([
-    'the', 'and', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 
-    'by', 'as', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'is', 'are', 
-    'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 
-    'did', 'this', 'that', 'these', 'those', 'my', 'your', 'his', 'her', 
-    'its', 'our', 'their', 'from'
+    'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I', 
+    'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at',
+    'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she',
+    'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what',
+    'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me',
+    'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take',
+    'people', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other'
   ]);
   
-  // Count word frequencies
   words.forEach(word => {
     const lowerWord = word.toLowerCase();
-    if (lowerWord.length < 3 || commonWords.has(lowerWord)) {
-      return;
-    }
+    
+    // Skip common words and very short ones
+    if (commonWords.has(lowerWord) || lowerWord.length < 4) return;
     
     if (!styleProfile.vocabularyProfile.favoriteWords[lowerWord]) {
       styleProfile.vocabularyProfile.favoriteWords[lowerWord] = 1;
@@ -277,40 +226,30 @@ const analyzeWords = (words) => {
     }
   });
   
-  // Calculate vocabulary complexity (simple approximation)
-  let complexWordCount = 0;
-  let longWordCount = 0;
-  
-  words.forEach(word => {
-    if (word.length > 8) {
-      longWordCount++;
-    }
+  // Keep the favorite words collection at a reasonable size
+  const sortedWords = Object.entries(styleProfile.vocabularyProfile.favoriteWords)
+    .sort((a, b) => b[1] - a[1]);
     
-    // Simple syllable count approximation
-    const syllables = word.match(/[aeiouy]{1,2}/g)?.length || 1;
-    if (syllables > 2) {
-      complexWordCount++;
-    }
+  if (sortedWords.length > 50) {
+    styleProfile.vocabularyProfile.favoriteWords = 
+      Object.fromEntries(sortedWords.slice(0, 50));
+  }
+  
+  // Analyze word complexity (approximated by word length)
+  let totalComplexity = 0;
+  words.forEach(word => {
+    // Skip very short words
+    if (word.length < 3) return;
+    
+    // Add to complexity score based on length
+    if (word.length > 10) totalComplexity += 3;
+    else if (word.length > 7) totalComplexity += 2;
+    else if (word.length > 5) totalComplexity += 1;
   });
   
-  const complexityScore = (complexWordCount / words.length) * 10;
-  const diversityScore = (new Set(words.map(w => w.toLowerCase())).size / words.length) * 10;
-  
-  // Update vocabulary profile using weighted average
+  const complexityScore = totalComplexity / words.length;
   styleProfile.vocabularyProfile.complexity = 
-    (styleProfile.vocabularyProfile.complexity * 0.8) + (complexityScore * 0.2);
-    
-  styleProfile.vocabularyProfile.diversity = 
-    (styleProfile.vocabularyProfile.diversity * 0.8) + (diversityScore * 0.2);
-    
-  // Clean up favorite words to keep only most frequent
-  if (Object.keys(styleProfile.vocabularyProfile.favoriteWords).length > 30) {
-    const sortedWords = Object.entries(styleProfile.vocabularyProfile.favoriteWords)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 30);
-      
-    styleProfile.vocabularyProfile.favoriteWords = Object.fromEntries(sortedWords);
-  }
+    (styleProfile.vocabularyProfile.complexity * 0.7) + (complexityScore * 0.3);
 };
 
 /**
@@ -318,49 +257,44 @@ const analyzeWords = (words) => {
  * @param {string} text - Text to analyze for punctuation
  */
 const analyzePunctuation = (text) => {
-  // Count punctuation marks
-  const exclamationCount = (text.match(/!/g) || []).length;
-  const commaCount = (text.match(/,/g) || []).length;
-  const ellipsisCount = (text.match(/\\.\\.\\.|\\.{3}/g) || []).length;
-  const semicolonCount = (text.match(/;/g) || []).length;
-  const parenthesesCount = (text.match(/[\\(\\)]/g) || []).length;
-  const dashCount = (text.match(/[-–—]/g) || []).length;
+  // Count punctuation frequencies
+  const punctuationCounts = {
+    exclamation: (text.match(/!/g) || []).length,
+    comma: (text.match(/,/g) || []).length,
+    ellipsis: (text.match(/\.{3}/g) || []).length,
+    semicolon: (text.match(/;/g) || []).length,
+    parentheses: (text.match(/\(/g) || []).length,
+    dash: (text.match(/-/g) || []).length
+  };
   
   // Normalize by text length (per 100 characters)
-  const textLength = text.length / 100;
+  const textLength = Math.max(text.length, 1);
+  const normalizer = 100 / textLength;
   
-  // Update punctuation frequency with a weighted average
-  const weight = 0.3; // New data weight
-  const oldWeight = 1 - weight;
-  
+  // Update punctuation style metrics
   styleProfile.punctuationStyle.exclamationFrequency = 
-    styleProfile.punctuationStyle.exclamationFrequency * oldWeight + 
-    Math.min(exclamationCount / textLength * 5, 10) * weight;
+    (styleProfile.punctuationStyle.exclamationFrequency * 0.7) + 
+    (punctuationCounts.exclamation * normalizer * 0.3);
     
   styleProfile.punctuationStyle.commaFrequency = 
-    styleProfile.punctuationStyle.commaFrequency * oldWeight + 
-    Math.min(commaCount / textLength * 2, 10) * weight;
+    (styleProfile.punctuationStyle.commaFrequency * 0.7) + 
+    (punctuationCounts.comma * normalizer * 0.3);
     
   styleProfile.punctuationStyle.ellipsisUsage = 
-    styleProfile.punctuationStyle.ellipsisUsage * oldWeight + 
-    Math.min(ellipsisCount / textLength * 10, 10) * weight;
+    (styleProfile.punctuationStyle.ellipsisUsage * 0.7) + 
+    (punctuationCounts.ellipsis * normalizer * 0.3);
     
   styleProfile.punctuationStyle.semicolonUsage = 
-    styleProfile.punctuationStyle.semicolonUsage * oldWeight + 
-    Math.min(semicolonCount / textLength * 10, 10) * weight;
+    (styleProfile.punctuationStyle.semicolonUsage * 0.7) + 
+    (punctuationCounts.semicolon * normalizer * 0.3);
     
   styleProfile.punctuationStyle.parenthesesUsage = 
-    styleProfile.punctuationStyle.parenthesesUsage * oldWeight + 
-    Math.min(parenthesesCount / textLength * 5, 10) * weight;
+    (styleProfile.punctuationStyle.parenthesesUsage * 0.7) + 
+    (punctuationCounts.parentheses * normalizer * 0.3);
     
   styleProfile.punctuationStyle.dashUsage = 
-    styleProfile.punctuationStyle.dashUsage * oldWeight + 
-    Math.min(dashCount / textLength * 5, 10) * weight;
-  
-  // Clamp values to 0-10 range
-  Object.keys(styleProfile.punctuationStyle).forEach(key => {
-    styleProfile.punctuationStyle[key] = clamp(styleProfile.punctuationStyle[key], 0, 10);
-  });
+    (styleProfile.punctuationStyle.dashUsage * 0.7) + 
+    (punctuationCounts.dash * normalizer * 0.3);
 };
 
 /**
@@ -368,13 +302,11 @@ const analyzePunctuation = (text) => {
  * @param {string} text - Text to analyze for emoji usage
  */
 const analyzeEmoji = (text) => {
-  // Simple emoji detection regex (covers common emoji patterns)
-  const emojiRegex = /[\\u{1F300}-\\u{1F6FF}\\u{1F700}-\\u{1F77F}\\u{1F780}-\\u{1F7FF}\\u{1F800}-\\u{1F8FF}\\u{1F900}-\\u{1F9FF}\\u{1FA00}-\\u{1FA6F}\\u{1FA70}-\\u{1FAFF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}]/gu;
-  const emojis = text.match(emojiRegex) || [];
+  // Simple emoji detection (for common emojis)
+  const emojis = text.match(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu) || [];
   
-  // Also detect emoticons
-  const emoticonRegex = /(?::|;|=)(?:-)?(?:\\)|\\(|D|P)/g;
-  const emoticons = text.match(emoticonRegex) || [];
+  // Also detect text emoticons
+  const emoticons = text.match(/(?::|;|=)(?:-)?(?:\)|D|P|\()/g) || [];
   
   const allEmojis = [...emojis, ...emoticons];
   
@@ -389,15 +321,15 @@ const analyzeEmoji = (text) => {
     // Categorize emojis (simple approximation)
     allEmojis.forEach(emoji => {
       // Positive emojis
-      if (/[😀😃😄😁😆😊🙂🙃😉😌😍🥰😘💕❤️👍]/u.test(emoji) || 
-          /(?::|=)(?:-)?\\)/g.test(emoji)) {
+      if (/😀|😃|😄|😁|😆|😊|🙂|🙃|😉|😌|😍|🥰|😘|💕|❤️|👍/u.test(emoji) || 
+          /(?::|=)(?:-)?\)/g.test(emoji)) {
         if (!styleProfile.emojiStyle.positive.includes(emoji)) {
           styleProfile.emojiStyle.positive.push(emoji);
         }
       } 
       // Negative emojis
-      else if (/[😞😔😟😕🙁☹️😣😖😫😩🥺😢😭😠😡👎]/u.test(emoji) ||
-              /(?::|=)(?:-)?\\(/g.test(emoji)) {
+      else if (/😞|😔|😟|😕|🙁|☹️|😣|😖|😫|😩|🥺|😢|😭|😠|😡|👎/u.test(emoji) ||
+              /(?::|=)(?:-)?\(/g.test(emoji)) {
         if (!styleProfile.emojiStyle.negative.includes(emoji)) {
           styleProfile.emojiStyle.negative.push(emoji);
         }
@@ -429,9 +361,9 @@ const extractPhrases = (text) => {
   
   // Check for greeting phrases
   const greetingPatterns = [
-    /\\bhello\\b/, /\\bhi\\b/, /\\bhey\\b/, /\\bgreetings\\b/, 
-    /\\bgood morning\\b/, /\\bgood afternoon\\b/, /\\bgood evening\\b/,
-    /\\bhowdy\\b/, /\\bwhat('s| is) up\\b/, /\\byo\\b/
+    /\bhello\b/, /\bhi\b/, /\bhey\b/, /\bgreetings\b/, 
+    /\bgood morning\b/, /\bgood afternoon\b/, /\bgood evening\b/,
+    /\bhowdy\b/, /\bwhat('s| is) up\b/, /\byo\b/
   ];
   
   greetingPatterns.forEach(pattern => {
@@ -451,10 +383,10 @@ const extractPhrases = (text) => {
   
   // Check for farewell phrases
   const farewellPatterns = [
-    /\\bbye\\b/, /\\bgoodbye\\b/, /\\bsee you\\b/, /\\btake care\\b/, 
-    /\\bfarewell\\b/, /\\buntil next time\\b/, /\\bsee ya\\b/,
-    /\\bso long\\b/, /\\btalk to you later\\b/, /\\btalk soon\\b/,
-    /\\blater\\b/, /\\bcheers\\b/
+    /\bbye\b/, /\bgoodbye\b/, /\bsee you\b/, /\btake care\b/, 
+    /\bfarewell\b/, /\buntil next time\b/, /\bsee ya\b/,
+    /\bso long\b/, /\btalk to you later\b/, /\btalk soon\b/,
+    /\blater\b/, /\bcheers\b/
   ];
   
   farewellPatterns.forEach(pattern => {
@@ -474,10 +406,10 @@ const extractPhrases = (text) => {
   
   // Check for transitional phrases
   const transitionPatterns = [
-    /\\bon the other hand\\b/, /\\bhowever\\b/, /\\btherefore\\b/, 
-    /\\bconsequently\\b/, /\\bfurthermore\\b/, /\\bmoreover\\b/,
-    /\\bin addition\\b/, /\\bin conclusion\\b/, /\\bto sum up\\b/,
-    /\\banyway\\b/, /\\bin any case\\b/, /\\bbesides\\b/
+    /\bon the other hand\b/, /\bhowever\b/, /\btherefore\b/, 
+    /\bconsequently\b/, /\bfurthermore\b/, /\bmoreover\b/,
+    /\bin addition\b/, /\bin conclusion\b/, /\bto sum up\b/,
+    /\banyway\b/, /\bin any case\b/, /\bbesides\b/
   ];
   
   transitionPatterns.forEach(pattern => {
@@ -496,7 +428,7 @@ const extractPhrases = (text) => {
   });
   
   // Extract frequent expressions (3-5 word phrases)
-  const words = lowerText.split(/\\s+/);
+  const words = lowerText.split(/\s+/);
   for (let len = 3; len <= 5; len++) {
     if (words.length >= len) {
       for (let i = 0; i <= words.length - len; i++) {
@@ -528,7 +460,7 @@ const isSignificantPhrase = (phrase) => {
   
   // Skip phrases that are just common words
   const commonWords = ['the', 'and', 'but', 'that', 'this', 'what', 'when', 'where', 'which'];
-  const phraseWords = phrase.split(/\\s+/);
+  const phraseWords = phrase.split(/\s+/);
   
   // If it's all common words, skip it
   if (phraseWords.every(word => commonWords.includes(word))) return false;
@@ -555,22 +487,22 @@ const analyzeFormality = (text) => {
   let directnessScore = 0;
   
   // Direct phrases increase score
-  if (/\\bi think\\b|\\bin my opinion\\b|\\bi believe\\b/g.test(lowerText)) {
+  if (/\bi think\b|\bin my opinion\b|\bi believe\b/g.test(lowerText)) {
     directnessScore += 2;
   }
   
   // Hedging phrases decrease score
-  if (/\\bperhaps\\b|\\bmaybe\\b|\\bpossibly\\b|\\bit seems\\b|\\bsort of\\b|\\bkind of\\b/g.test(lowerText)) {
+  if (/\bperhaps\b|\bmaybe\b|\bpossibly\b|\bit seems\b|\bsort of\b|\bkind of\b/g.test(lowerText)) {
     directnessScore -= 2;
   }
   
   // Strong statements increase score
-  if (/\\bcertainly\\b|\\bdefinitely\\b|\\babsolutely\\b|\\bwithout a doubt\\b/g.test(lowerText)) {
+  if (/\bcertainly\b|\bdefinitely\b|\babsolutely\b|\bwithout a doubt\b/g.test(lowerText)) {
     directnessScore += 3;
   }
   
   // Imperative sentences increase score
-  if (/\\b(do|make|get|find|use|try|keep|let|go)\\b [a-z]+/g.test(lowerText)) {
+  if (/\b(do|make|get|find|use|try|keep|let|go)\b [a-z]+/g.test(lowerText)) {
     directnessScore += 1;
   }
   
@@ -578,7 +510,7 @@ const analyzeFormality = (text) => {
     (styleProfile.behavioralPatterns.directness * 0.7) + (directnessScore * 0.3);
   
   // Verbosity indicators
-  const words = lowerText.match(/\\b\\w+\\b/g) || [];
+  const words = lowerText.match(/\b\w+\b/g) || [];
   const sentences = lowerText.match(/[^.!?]+[.!?]+/g) || [];
   
   if (sentences.length > 0) {
@@ -596,7 +528,7 @@ const analyzeFormality = (text) => {
     if (commaCount > sentences.length * 2) verbosityScore += 2;
     
     // Adverbs often make text more verbose
-    const adverbCount = (lowerText.match(/\\b\\w+ly\\b/g) || []).length;
+    const adverbCount = (lowerText.match(/\b\w+ly\b/g) || []).length;
     if (adverbCount > words.length * 0.05) verbosityScore += 2;
     
     styleProfile.behavioralPatterns.verbosity = 
@@ -654,16 +586,16 @@ const calculateFormality = (text) => {
   let score = 0;
   
   // Formal indicators
-  if (/\\bdear\\b|\\bsincerely\\b|\\bregards\\b|\\brespectfully\\b/g.test(text)) score += 3;
-  if (/\\bshall\\b|\\bwould\\b|\\boutlined\\b|\\bproceed\\b/g.test(text)) score += 2;
-  if (/(\\bI am\\b|\\bthey are\\b|\\bhe is\\b|\\bshe is\\b)/g.test(text)) score += 1;
-  if (/(\\bcannot\\b|\\bdo not\\b|\\bwill not\\b)/g.test(text)) score += 1;
+  if (/\bdear\b|\bsincerely\b|\bregards\b|\brespectfully\b/g.test(text)) score += 3;
+  if (/\bshall\b|\bwould\b|\boutlined\b|\bproceed\b/g.test(text)) score += 2;
+  if (/(\bI am\b|\bthey are\b|\bhe is\b|\bshe is\b)/g.test(text)) score += 1;
+  if (/(\bcannot\b|\bdo not\b|\bwill not\b)/g.test(text)) score += 1;
   
   // Informal indicators
-  if (/\\bhey\\b|\\byeah\\b|\\bnah\\b|\\bcool\\b|\\bawesome\\b/g.test(text)) score -= 3;
-  if (/(\\bI'm\\b|\\bthey're\\b|\\bhe's\\b|\\bshe's\\b)/g.test(text)) score -= 1;
-  if (/(\\bcan't\\b|\\bdon't\\b|\\bwon't\\b|\\bgonna\\b|\\bwanna\\b)/g.test(text)) score -= 1;
-  if (/\\bomg\\b|\\blol\\b|\\bbtw\\b|\\bidk\\b|\\bimo\\b/g.test(text)) score -= 3;
+  if (/\bhey\b|\byeah\b|\bnah\b|\bcool\b|\bawesome\b/g.test(text)) score -= 3;
+  if (/(\bI'm\b|\bthey're\b|\bhe's\b|\bshe's\b)/g.test(text)) score -= 1;
+  if (/(\bcan't\b|\bdon't\b|\bwon't\b|\bgonna\b|\bwanna\b)/g.test(text)) score -= 1;
+  if (/\bomg\b|\blol\b|\bbtw\b|\bidk\b|\bimo\b/g.test(text)) score -= 3;
   
   return score;
 };
@@ -855,18 +787,21 @@ export const generateMirroredText = (baseText, moodOverrides = null) => {
   const directness = styleProfile.behavioralPatterns.directness;
   if (directness > 5) {
     // More direct
-    result = result.replace(/I think |Perhaps |Maybe |Possibly |It seems like /gi, '');
-    result = result.replace(/in my opinion, /gi, '');
+    result = result.replace(/I think |Perhaps |Maybe |Possibly |It seems like |sort of |kind of /gi, '');
+    result = result.replace(/I believe that /gi, '');
+    result = result.replace(/In my opinion, /gi, '');
     
-    // Add direct phrases occasionally
-    if (Math.random() < 0.3 && !result.includes('Look,')) {
-      result = 'Look, ' + result.charAt(0).toLowerCase() + result.slice(1);
+    // Add direct phrases for strong directness
+    if (directness > 7 && Math.random() < 0.3) {
+      if (!result.includes('Look,') && !result.includes('listen')) {
+        result = 'Look, ' + result.charAt(0).toLowerCase() + result.slice(1);
+      }
     }
-  }
+  } 
   else if (directness < -5) {
-    // More indirect/hedging
-    if (!result.match(/I think|Perhaps|Maybe|Possibly|It seems like/gi)) {
-      const hedges = ['I think ', 'Perhaps ', 'It seems that ', 'Maybe '];
+    // More indirect
+    if (!result.match(/I think|Perhaps|Maybe|Possibly|It seems like|sort of|kind of/gi)) {
+      const hedges = ['I think ', 'Perhaps ', 'It seems like ', 'Maybe '];
       const hedge = hedges[Math.floor(Math.random() * hedges.length)];
       result = hedge + result.charAt(0).toLowerCase() + result.slice(1);
     }
@@ -876,14 +811,27 @@ export const generateMirroredText = (baseText, moodOverrides = null) => {
   const verbosity = styleProfile.behavioralPatterns.verbosity;
   if (verbosity > 5) {
     // More verbose
-    // Expand certain words with more descriptive alternatives
-    result = result.replace(/\\b(good)\\b/gi, 'excellent')
-                   .replace(/\\b(bad)\\b/gi, 'unfortunate')
-                   .replace(/\\b(nice)\\b/gi, 'delightful');
-                   
-    // Add transition phrases
-    if (result.includes('.') && styleProfile.phrasesAndExpressions.transitions.length > 0) {
-      const transitions = styleProfile.phrasesAndExpressions.transitions;
+    result = result.replace(/\b(good|bad|nice|interesting)\b/gi, (match) => {
+      const expansions = {
+        'good': ['excellent', 'remarkable', 'outstanding', 'wonderful'],
+        'bad': ['terrible', 'unfortunate', 'disappointing', 'unpleasant'],
+        'nice': ['delightful', 'pleasant', 'enjoyable', 'charming'],
+        'interesting': ['fascinating', 'intriguing', 'compelling', 'thought-provoking']
+      };
+      
+      const options = expansions[match.toLowerCase()] || [match];
+      return options[Math.floor(Math.random() * options.length)];
+    });
+    
+    // Add transitional phrases if missing
+    if (styleProfile.phrasesAndExpressions.transitions.length > 0 &&
+        result.includes('.') && 
+        !result.match(/however|therefore|consequently|furthermore|additionally/i)) {
+      
+      const transitions = styleProfile.phrasesAndExpressions.transitions.length > 0 
+        ? styleProfile.phrasesAndExpressions.transitions 
+        : ['Furthermore', 'Additionally', 'Moreover', 'In addition'];
+      
       const transition = transitions[Math.floor(Math.random() * transitions.length)];
       
       // Insert at a sentence break
@@ -894,102 +842,125 @@ export const generateMirroredText = (baseText, moodOverrides = null) => {
         result = sentences.join('.');
       }
     }
-  }
+  } 
   else if (verbosity < -5) {
     // More concise
-    result = result.replace(/\\b(very|really|quite|extremely|absolutely)\\b\\s/gi, '');
+    result = result.replace(/\b(very|really|quite|extremely|absolutely|basically|actually|essentially)\b\s/gi, '');
+    
+    // Simplify longer phrases
     result = result.replace(/in order to/gi, 'to')
-                   .replace(/due to the fact that/gi, 'because')
-                   .replace(/at this point in time/gi, 'now')
-                   .replace(/in the event that/gi, 'if');
-  }
-  
-  // Apply punctuation style
-  const exclamationFreq = styleProfile.punctuationStyle.exclamationFrequency;
-  if (exclamationFreq > 7 && !result.includes('!')) {
-    // Add exclamation points for users who use them frequently
-    result = result.replace(/\\.$/g, '!');
-  }
-  
-  const ellipsisUsage = styleProfile.punctuationStyle.ellipsisUsage;
-  if (ellipsisUsage > 7 && !result.includes('...')) {
-    // Add ellipses for users who use them frequently
-    const sentences = result.split('.');
-    if (sentences.length > 1) {
-      const insertPoint = Math.floor(Math.random() * (sentences.length - 1));
-      sentences[insertPoint] = sentences[insertPoint] + '...';
-      result = sentences.join('.');
-    }
-  }
-  
-  // Add favorite phrases occasionally
-  if (styleProfile.phrasesAndExpressions.expressions.length > 0 && Math.random() < 0.3) {
-    const expressions = styleProfile.phrasesAndExpressions.expressions;
-    const expression = expressions[Math.floor(Math.random() * expressions.length)];
+               .replace(/due to the fact that/gi, 'because')
+               .replace(/at this point in time/gi, 'now')
+               .replace(/in the event that/gi, 'if')
+               .replace(/on the grounds that/gi, 'because')
+               .replace(/in light of the fact that/gi, 'because');
     
-    // Avoid duplication
-    if (!result.toLowerCase().includes(expression)) {
-      // Add the expression in a natural way
-      const sentences = result.split('.');
-      if (sentences.length > 0) {
-        const randomSentence = Math.floor(Math.random() * sentences.length);
-        
-        // Different ways to incorporate the expression
-        const insertionMethods = [
-          // At the beginning
-          () => { sentences[randomSentence] = expression + ', ' + sentences[randomSentence].trim(); },
-          // At the end
-          () => { sentences[randomSentence] = sentences[randomSentence].trim() + ' ' + expression; },
-          // As a standalone
-          () => { sentences.splice(randomSentence, 0, ' ' + expression); }
-        ];
-        
-        // Choose a random insertion method
-        const insertMethod = insertionMethods[Math.floor(Math.random() * insertionMethods.length)];
-        insertMethod();
-        
-        result = sentences.join('.');
+    // Shorten sentences by removing some clauses
+    result = result.replace(/,\s*which\s+[^.,]+/gi, '');
+  }
+  
+  // Apply emotional expression adjustments
+  const emotionalExpression = styleProfile.behavioralPatterns.emotionalExpression;
+  
+  // Use mood overrides if provided, otherwise use style profile's emotional signature
+  let dominantEmotion = 'neutral';
+  if (moodOverrides) {
+    // Find the strongest emotion in the overrides
+    let maxIntensity = 0;
+    Object.entries(moodOverrides).forEach(([emotion, intensity]) => {
+      if (intensity > maxIntensity) {
+        maxIntensity = intensity;
+        dominantEmotion = emotion;
       }
-    }
+    });
+  } else {
+    // Find the dominant emotion in the style profile
+    let maxFrequency = 0;
+    Object.entries(styleProfile.emotionalSignature).forEach(([emotion, data]) => {
+      if (data.frequency > maxFrequency) {
+        maxFrequency = data.frequency;
+        dominantEmotion = emotion;
+      }
+    });
   }
   
-  // Add emojis if the user uses them
-  const emojiFreq = styleProfile.emojiStyle.frequency;
-  if (emojiFreq > 5 && styleProfile.emojiStyle.favorites.length > 0) {
-    // Get appropriate emojis based on emotional tone
-    let relevantEmojis = [];
-    
-    // Apply mood overrides or use base emotional signature
-    if (moodOverrides) {
-      if (moodOverrides.joy > 7) {
-        relevantEmojis = [...styleProfile.emojiStyle.positive];
-      } else if (moodOverrides.sadness > 7) {
-        relevantEmojis = [...styleProfile.emojiStyle.negative];
-      } else {
-        relevantEmojis = [...styleProfile.emojiStyle.favorites];
-      }
-    } else {
-      // Default to using favorites
-      relevantEmojis = [...styleProfile.emojiStyle.favorites];
-    }
-    
-    if (relevantEmojis.length > 0) {
-      const emoji = relevantEmojis[Math.floor(Math.random() * relevantEmojis.length)];
+  // Only apply emotional styling if the expression level is high enough
+  if (emotionalExpression > 5) {
+    // Add emotional markers
+    if (dominantEmotion !== 'neutral' && Math.random() < 0.4) {
+      // Emotion-specific expressions
+      const emotionalExpressions = {
+        joy: ['I\'m happy that', 'I\'m delighted that', 'I\'m glad that', 'It\'s wonderful that'],
+        sadness: ['I\'m sad that', 'Unfortunately,', 'It\'s unfortunate that', 'I regret that'],
+        anger: ['I\'m frustrated that', 'It\'s irritating that', 'It bothers me that'],
+        surprise: ['Surprisingly,', 'Amazingly,', 'I\'m surprised that', 'It\'s remarkable that'],
+        interest: ['Interestingly,', 'Notably,', 'I find it interesting that'],
+        confusion: ['I\'m confused about', 'It\'s puzzling that', 'I wonder why']
+      };
       
-      // Add emoji at end of message or sentence
-      if (Math.random() < 0.7) {
-        // End of message
-        result = result + ' ' + emoji;
-      } else {
-        // End of random sentence
+      const expressions = emotionalExpressions[dominantEmotion] || 
+                         ['I feel that', 'I think that', 'In my view,'];
+      
+      const expression = expressions[Math.floor(Math.random() * expressions.length)];
+      
+      // Add at beginning of a sentence
+      if (result.includes('.')) {
         const sentences = result.split('.');
         if (sentences.length > 1) {
-          const randomSentence = Math.floor(Math.random() * (sentences.length - 1));
-          sentences[randomSentence] = sentences[randomSentence] + ' ' + emoji;
+          const insertPoint = Math.floor(Math.random() * sentences.length);
+          sentences[insertPoint] = ' ' + expression + sentences[insertPoint].trim();
           result = sentences.join('.');
         }
+      } else {
+        // Add at beginning if no sentences
+        result = expression + ' ' + result;
       }
     }
+    
+    // Adjust ending punctuation based on emotion
+    if (dominantEmotion === 'joy' || dominantEmotion === 'surprise') {
+      // More exclamation points for happy/excited emotions
+      result = result.replace(/\.\s*([A-Z])/g, (match, p1, offset) => {
+        return Math.random() < 0.3 ? `! ${p1}` : match;
+      });
+    } else if (dominantEmotion === 'confusion') {
+      // More question marks for confusion
+      result = result.replace(/\.\s*([A-Z])/g, (match, p1, offset) => {
+        return Math.random() < 0.2 ? `? ${p1}` : match;
+      });
+    }
+  }
+  
+  // Add favorite emoji if appropriate
+  if (styleProfile.emojiStyle.frequency > 3 && Math.random() < 0.3) {
+    let emojiPool;
+    
+    // Select appropriate emoji category based on emotion
+    if (['joy', 'interest'].includes(dominantEmotion) && styleProfile.emojiStyle.positive.length > 0) {
+      emojiPool = styleProfile.emojiStyle.positive;
+    } else if (['sadness', 'anger'].includes(dominantEmotion) && styleProfile.emojiStyle.negative.length > 0) {
+      emojiPool = styleProfile.emojiStyle.negative;
+    } else if (styleProfile.emojiStyle.favorites.length > 0) {
+      emojiPool = styleProfile.emojiStyle.favorites;
+    } else {
+      emojiPool = [];
+    }
+    
+    // Add emoji if we have any
+    if (emojiPool.length > 0) {
+      const emoji = emojiPool[Math.floor(Math.random() * emojiPool.length)];
+      result = result.trim() + ' ' + emoji;
+    }
+  }
+  
+  // Add personal greeting/farewell if appropriate
+  if (result.trim().endsWith('?') && 
+      styleProfile.phrasesAndExpressions.greetings.length > 0 && 
+      Math.random() < 0.2) {
+    const greeting = styleProfile.phrasesAndExpressions.greetings[
+      Math.floor(Math.random() * styleProfile.phrasesAndExpressions.greetings.length)
+    ];
+    result = greeting.charAt(0).toUpperCase() + greeting.slice(1) + '. ' + result;
   }
   
   return result;
@@ -999,9 +970,9 @@ export const generateMirroredText = (baseText, moodOverrides = null) => {
 export default {
   initializeStyleAnalyzer,
   analyzeText,
+  generateMirroredText,
   getStyleProfile,
   saveStyleProfile,
   loadStyleProfile,
-  adjustEmotionalSignature,
-  generateMirroredText
+  adjustEmotionalSignature
 };
