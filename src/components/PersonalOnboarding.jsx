@@ -6,6 +6,7 @@ import { initializeLearningSystem } from '../utils/personalLearningSystem';
 /**
  * Personal onboarding component for Echo Twin
  * Collects essential information to create a personalized twin experience
+ * Enhanced with security PIN setup for authentication
  */
 const PersonalOnboarding = ({ onComplete }) => {
   const [step, setStep] = useState(1);
@@ -13,6 +14,8 @@ const PersonalOnboarding = ({ onComplete }) => {
     name: '',
     interests: [],
     occupation: '',
+    pin: '', // Security PIN for authentication
+    confirmPin: '', // Confirmation PIN
     communicationPreferences: {
       formal: false,
       casual: false,
@@ -132,15 +135,35 @@ const PersonalOnboarding = ({ onComplete }) => {
       return;
     }
     
-    // Clear any previous errors
-    setError('');
-    
-    // If this is the final step, initialize the personalization system
-    if (step === 4) {
+    // Validate PIN on security step
+    if (step === 5) {
+      if (!userData.pin.trim()) {
+        setError('Please create a security PIN to continue.');
+        return;
+      }
+      
+      if (userData.pin !== userData.confirmPin) {
+        setError('PINs do not match. Please try again.');
+        return;
+      }
+      
+      // PIN validated, proceed to initialize the system
       setIsProcessing(true);
       
       // Initialize all personalization systems
       try {
+        // Store user data with PIN for login
+        const secureUserData = {
+          fullName: userData.name.trim(),
+          pin: userData.pin,
+          created: new Date().toISOString()
+        };
+        
+        // Save authentication info
+        localStorage.setItem('shadow_os_user_data', JSON.stringify(secureUserData));
+        localStorage.setItem('shadow_os_user_name', userData.name.trim());
+        
+        // Initialize personalization systems
         initializeIdentityProfiler(userData);
         initializeStyleAnalyzer(userData);
         initializeLearningSystem(userData);
@@ -157,6 +180,9 @@ const PersonalOnboarding = ({ onComplete }) => {
       
       return;
     }
+    
+    // Clear any previous errors
+    setError('');
     
     // Move to next step
     setStep(prev => prev + 1);
@@ -495,6 +521,56 @@ const PersonalOnboarding = ({ onComplete }) => {
                 className="form-textarea"
               />
             </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="onboarding-step">
+            <h3>Security Setup</h3>
+            <p className="step-description">
+              Create a secure PIN to protect access to your Echo Twin. You'll need this PIN to log in.
+              Privacy and security are central to the Shadow OS experience.
+            </p>
+            
+            <div className="security-section">
+              <div className="form-group">
+                <label htmlFor="pin">Create a Security PIN</label>
+                <input
+                  type="password"
+                  id="pin"
+                  name="pin"
+                  value={userData.pin}
+                  onChange={handleInputChange}
+                  placeholder="Enter a secure PIN"
+                  className="form-input"
+                  autoComplete="new-password"
+                />
+                <p className="input-hint">Choose a secure, memorable PIN. This will be required for login.</p>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="confirmPin">Confirm Security PIN</label>
+                <input
+                  type="password"
+                  id="confirmPin"
+                  name="confirmPin"
+                  value={userData.confirmPin}
+                  onChange={handleInputChange}
+                  placeholder="Confirm your PIN"
+                  className="form-input"
+                  autoComplete="new-password"
+                />
+              </div>
+              
+              <div className="privacy-notice">
+                <p>
+                  <strong>Privacy & Security:</strong> Your PIN is stored locally on your device and 
+                  is used to protect access to your personal Echo Twin. We recommend using a 
+                  unique PIN that you don't use elsewhere.
+                </p>
+              </div>
+            </div>
             
             <div className="summary-container">
               <h4>Creating Your Digital Twin</h4>
@@ -531,6 +607,7 @@ const PersonalOnboarding = ({ onComplete }) => {
           <div className={`step-dot ${step >= 2 ? 'active' : ''}`}></div>
           <div className={`step-dot ${step >= 3 ? 'active' : ''}`}></div>
           <div className={`step-dot ${step >= 4 ? 'active' : ''}`}></div>
+          <div className={`step-dot ${step >= 5 ? 'active' : ''}`}></div>
         </div>
       </div>
       
@@ -558,7 +635,7 @@ const PersonalOnboarding = ({ onComplete }) => {
           className="next-button"
           disabled={isProcessing}
         >
-          {step < 4 ? 'Next' : 'Create My Echo Twin'}
+          {step < 5 ? 'Next' : 'Create My Echo Twin'}
         </button>
       </div>
     </div>

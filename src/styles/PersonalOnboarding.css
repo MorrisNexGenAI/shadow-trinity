@@ -419,3 +419,36 @@
     height: 22px;
   }
 }
+/* Security step styles */
+.security-section {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.input-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Style for form inputs */
+.form-input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: #e2f3f5;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #00bfff;
+  box-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
+}
