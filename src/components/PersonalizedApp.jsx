@@ -15,7 +15,7 @@ import './PersonalizedApp.css';
 const PersonalizedApp = () => {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [showLearningPanel, setShowLearningPanel] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true); // Always show tutorial initially
   const [isPersonalized, setIsPersonalized] = useState(false);
   const [userData, setUserData] = useState(null);
   
@@ -43,11 +43,8 @@ const PersonalizedApp = () => {
       }
     }
     
-    // Check if tutorial has been shown before
-    const tutorialShown = localStorage.getItem('tutorialShown');
-    
-    // Show tutorial if not shown before or if we're in a new session
-    setShowTutorial(!tutorialShown);
+    // Force show tutorial for now (demo purposes)
+    setShowTutorial(true);
   }, []);
   
   const handleOnboardingComplete = () => {

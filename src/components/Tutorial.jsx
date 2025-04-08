@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Tutorial.css';
 
 const Tutorial = ({ onClose }) => {
+  // Force the tutorial to be visible when component mounts
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'; // Prevent scrolling behind tutorial
+    
+    // Clean up when component unmounts
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
   const [currentStep, setCurrentStep] = useState(0);
   
   const tutorialSteps = [
